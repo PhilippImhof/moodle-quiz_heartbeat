@@ -42,15 +42,12 @@ Feature: Check settings of the display table
       | slot | response  |
       | 1    | Foo Bar 3 |
 
-
-# Default sorting: last name; then first name asc/desc, last name asc/desc
-#
   Scenario: Filtering by initial of first or name
     When I am on the "Quiz 1" "quiz_heartbeat > heartbeat report" page logged in as "teacher1"
     Then I should see "Alan Anderson" in the "#heartbeatoverview_r0" "css_element"
     And I should see "John Doe" in the "#heartbeatoverview_r1" "css_element"
     And I should see "Jane Foo" in the "#heartbeatoverview_r2" "css_element"
-    And I click on "J" "link" in the "#firstinitial_page-item_J" "css_element"
+    And I click on "J" "link" in the ".firstinitial" "css_element"
     Then the following should not exist in the "heartbeatoverview" table:
       | -1-           |
       | Alan Anderson |
@@ -58,7 +55,7 @@ Feature: Check settings of the display table
     Then the following should exist in the "heartbeatoverview" table:
       | -1-           |
       | Alan Anderson |
-    When I click on "F" "link" in the "#lastinitial_page-item_F" "css_element"
+    When I click on "F" "link" in the ".lastinitial" "css_element"
     Then the following should not exist in the "heartbeatoverview" table:
       | -1-           |
       | Alan Anderson |
@@ -86,9 +83,3 @@ Feature: Check settings of the display table
     Then I should see "Alan Anderson" in the "#heartbeatoverview_r0" "css_element"
     And I should see "Jane Foo" in the "#heartbeatoverview_r1" "css_element"
     And I should see "John Doe" in the "#heartbeatoverview_r2" "css_element"
-
-
-
-
-
-

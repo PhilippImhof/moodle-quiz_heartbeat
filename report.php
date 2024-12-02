@@ -242,7 +242,7 @@ class quiz_heartbeat_report extends quiz_heartbeat_report_parent_alias {
                              WHERE ia.quiz = :iquizid AND ia.state = 'inprogress'
                           GROUP BY ist.userid
                         )
-              GROUP BY st.userid
+              GROUP BY st.userid, u.firstname, u.lastname, u.firstnamephonetic, u.lastnamephonetic, u.middlename, u.alternatename
               ORDER BY $sort";
 
         $results = $DB->get_records_sql($sql, $params + $joins->params);
