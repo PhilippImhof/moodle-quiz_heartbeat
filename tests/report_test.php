@@ -123,7 +123,7 @@ final class report_test extends \advanced_testcase {
         $student = reset($students);
         $quizzes = [
             $this->create_test_quiz($course),
-            $this->create_test_quiz($course)
+            $this->create_test_quiz($course),
         ];
         $attempts = [];
         foreach ($quizzes as $i => $quiz) {
@@ -274,7 +274,7 @@ final class report_test extends \advanced_testcase {
         $course = $generator->create_course();
         $quizzes = [
             $this->create_test_quiz($course),
-            $this->create_test_quiz($course)
+            $this->create_test_quiz($course),
         ];
         foreach ($quizzes as $quiz) {
             $this->add_two_regular_questions($questiongenerator, $quiz);
