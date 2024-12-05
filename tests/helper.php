@@ -110,7 +110,7 @@ class quiz_heartbeat_test_helper {
         $cm = get_coursemodule_from_id('quiz', $quiz->cmid);
         $report = new \quiz_heartbeat_report();
         list($currentgroup, $allstudentjoins, $groupstudentjoins, $allowedjoins) =
-            $report->init('heartbeat', 'quiz_heartbeat_form', $quiz, $cm, $course);
+            $report->init('heartbeat', 'quiz_heartbeat\form\heartbeat_form', $quiz, $cm, $course);
 
         return $report->get_pending_attempts($groupstudentjoins);
     }

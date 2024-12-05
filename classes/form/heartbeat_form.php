@@ -23,6 +23,7 @@
  * @license   https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace quiz_heartbeat\form;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -45,7 +46,7 @@ require_once($CFG->libdir . '/formslib.php');
  * @author    Philipp E. Imhof
  * @license   https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class quiz_heartbeat_form extends moodleform {
+class heartbeat_form extends \moodleform {
 
     /**
      * Form definition.

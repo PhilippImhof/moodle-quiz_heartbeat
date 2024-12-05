@@ -23,6 +23,8 @@
  * @license   https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace quiz_heartbeat\local;
+
 defined('MOODLE_INTERNAL') || die();
 
 // This work-around is required until Moodle 4.2 is the lowest version we support.
@@ -41,7 +43,7 @@ if (class_exists('\mod_quiz\local\reports\attempts_report_options')) {
  * @author    Philipp E. Imhof
  * @license   https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class quiz_heartbeat_options extends quiz_heartbeat_options_parent_class_alias {
+class heartbeat_options extends \quiz_heartbeat_options_parent_class_alias {
 
     /** @var int whether to do ascending or descending sort */
     public int $tdir = SORT_ASC;
@@ -75,7 +77,7 @@ class quiz_heartbeat_options extends quiz_heartbeat_options_parent_class_alias {
      * Get the current value of the settings to pass to the settings form.
      */
     public function get_initial_form_data() {
-        $toform = new stdClass();
+        $toform = new \stdClass();
 
         return $toform;
     }

@@ -23,7 +23,9 @@
  * @license   https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+
 use core\dml\sql_join;
+use quiz_heartbeat\local\heartbeat_options;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -54,7 +56,7 @@ require_once($CFG->dirroot . '/mod/quiz/report/heartbeat/classes/local/heartbeat
  * @author    Philipp E. Imhof
  * @license   https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class quiz_heartbeat_report extends quiz_heartbeat_report_parent_alias {
+class quiz_heartbeat_report extends \quiz_heartbeat_report_parent_alias {
 
     /** @var object course object */
     protected object $course;
@@ -66,7 +68,7 @@ class quiz_heartbeat_report extends quiz_heartbeat_report_parent_alias {
     protected object $quiz;
 
     /** @var quiz_heartbeat_options options for the report */
-    protected quiz_heartbeat_options $options;
+    protected heartbeat_options $options;
 
     /** @var array attempt and user data */
     protected array $attempts;
@@ -96,7 +98,7 @@ class quiz_heartbeat_report extends quiz_heartbeat_report_parent_alias {
         list($currentgroup, $allstudentjoins, $groupstudentjoins, $allowedjoins) =
             parent::init($mode, $formclass, $quiz, $cm, $course);
 
-        $this->options = new quiz_heartbeat_options('heartbeat', $quiz, $cm, $course);
+        $this->options = new heartbeat_options('heartbeat', $quiz, $cm, $course);
 
         $this->options->process_settings_from_params();
         if ($fromform = $this->form->get_data()) {
@@ -133,7 +135,7 @@ class quiz_heartbeat_report extends quiz_heartbeat_report_parent_alias {
      * @param stdClass $course the coures we are in.
      */
     public function display($quiz, $cm, $course) {
-        $this->init('heartbeat', 'quiz_heartbeat_form', $quiz, $cm, $course);
+        $this->init('heartbeat', 'quiz_heartbeat\form\heartbeat_form', $quiz, $cm, $course);
 
         $this->display_form();
         $this->display_table();
