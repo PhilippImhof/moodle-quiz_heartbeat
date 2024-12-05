@@ -40,8 +40,8 @@ if (class_exists('\mod_quiz\local\reports\attempts_report')) {
 }
 
 require_once($CFG->libdir . '/tablelib.php');
-require_once($CFG->dirroot . '/mod/quiz/report/heartbeat/heartbeat_form.php');
-require_once($CFG->dirroot . '/mod/quiz/report/heartbeat/heartbeat_options.php');
+require_once($CFG->dirroot . '/mod/quiz/report/heartbeat/classes/form/heartbeat_form.php');
+require_once($CFG->dirroot . '/mod/quiz/report/heartbeat/classes/local/heartbeat_options.php');
 
 /**
  * Quiz report subclass for the quiz_heartbeat report.

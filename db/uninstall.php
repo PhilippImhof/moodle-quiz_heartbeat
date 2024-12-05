@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Post-install script for the quiz_heartbeat plugin.
+ * Uninstallation script for the quiz_heartbeat plugin.
 
  * @package   quiz_heartbeat
  * @copyright 2024 Philipp E. Imhof
@@ -25,15 +25,10 @@
 
 
 /**
- * Post-install script
+ * Uninstallation script
  */
-function xmldb_quiz_heartbeat_install(): bool {
+function xmldb_quiz_heartbeat_uninstall(): bool {
     global $DB;
 
-    $record = (object)[
-        'name' => 'heartbeat',
-        'displayorder' => '5000',
-    ];
-
-    return $DB->insert_record('quiz_reports', $record);
+    return $DB->delete_records('quiz_reports', ['name' => 'heartbeat']);
 }
