@@ -27,16 +27,6 @@ require_once($CFG->dirroot . '/mod/quiz/report/heartbeat/classes/local/heartbeat
  * @author    Philipp E. Imhof
  * @license   https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-
-/**
- * Wrapper class.
- *
- * @package   quiz_heartbeat
- * @copyright 2024 Philipp E. Imhof
- * @author    Philipp E. Imhof
- * @license   https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 class quiz_heartbeat_report extends \quiz_heartbeat\local\heartbeat_report {
 
 }
