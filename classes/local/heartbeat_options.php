@@ -25,13 +25,10 @@
 
 namespace quiz_heartbeat\local;
 
-defined('MOODLE_INTERNAL') || die();
-
 // This work-around is required until Moodle 4.2 is the lowest version we support.
 if (class_exists('\mod_quiz\local\reports\attempts_report_options')) {
     class_alias('\mod_quiz\local\reports\attempts_report_options', '\quiz_heartbeat_options_parent_class_alias');
 } else {
-    require_once($CFG->dirroot . '/mod/quiz/report/attemptsreport_options.php');
     class_alias('\mod_quiz_attempts_report_options', '\quiz_heartbeat_options_parent_class_alias');
 }
 

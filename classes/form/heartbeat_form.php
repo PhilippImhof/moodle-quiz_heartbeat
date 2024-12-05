@@ -14,29 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-/**
- * This file defines the settings form for the quiz heartbeat report.
- *
- * @package   quiz_heartbeat
- * @copyright 2024 Philipp E. Imhof
- * @author    Philipp E. Imhof
- * @license   https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace quiz_heartbeat\form;
-
-defined('MOODLE_INTERNAL') || die();
-
-
-/**
- * Quiz heartbeat report settings form.
- *
- * @copyright 2024 Philipp E. Imhof
- * @author    Philipp E. Imhof
- * @license   https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-require_once($CFG->libdir . '/formslib.php');
 
 /**
  * Class defining the form for a {@see quiz_heartbeat_report}.
@@ -57,5 +35,4 @@ class heartbeat_form extends \moodleform {
         $mform = $this->_form;
         $mform->addElement('submit', 'refresh', get_string('refresh'));
     }
-
 }

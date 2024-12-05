@@ -26,24 +26,15 @@
 namespace quiz_heartbeat\local;
 
 use core\dml\sql_join;
-use quiz_heartbeat_report;
-
-defined('MOODLE_INTERNAL') || die();
 
 // This work-around is required until Moodle 4.2 is the lowest version we support.
 if (class_exists('\mod_quiz\local\reports\attempts_report')) {
     class_alias('\mod_quiz\local\reports\attempts_report', '\quiz_heartbeat_report_parent_alias');
     class_alias('\mod_quiz\quiz_attempt', '\quiz_heartbeat_quiz_attempt_alias');
 } else {
-    require_once($CFG->dirroot . '/mod/quiz/report/default.php');
-    require_once($CFG->dirroot . '/mod/quiz/report/attemptsreport.php');
-    require_once($CFG->dirroot . '/mod/quiz/attemptlib.php');
     class_alias('\quiz_attempts_report', '\quiz_heartbeat_report_parent_alias');
     class_alias('\quiz_attempt', '\quiz_heartbeat_quiz_attempt_alias');
 }
-
-require_once($CFG->libdir . '/tablelib.php');
-require_once($CFG->dirroot . '/mod/quiz/report/heartbeat/classes/form/heartbeat_form.php');
 
 /**
  * Quiz report subclass for the quiz_heartbeat report.
