@@ -51,10 +51,10 @@ class quiz_heartbeat_test_helper {
     /**
      * Helper method to add a few students to a course.
      *
-     * @param \stdClass $course
-     * @return \stdClass[] the generated students
+     * @param stdclass $course
+     * @return stdclass[] the generated students
      */
-    public static function add_students(\stdClass $course): array {
+    public static function add_students(stdclass $course): array {
         $names = [
             ['firstname' => 'John', 'lastname' => 'Doe'],
             ['firstname' => 'Jean', 'lastname' => 'Dupont'],
@@ -73,12 +73,12 @@ class quiz_heartbeat_test_helper {
     /**
      * Start an attempt at a quiz for a user.
      *
-     * @param \stdClass $quiz Quiz to attempt.
-     * @param \stdClass $user A user to attempt the quiz.
+     * @param stdclass $quiz Quiz to attempt.
+     * @param stdclass $user A user to attempt the quiz.
      * @param int $attemptnumber
      * @return array
      */
-    public static function start_attempt_at_quiz(\stdClass $quiz, \stdClass $user, $attemptnumber = 1): array {
+    public static function start_attempt_at_quiz(stdclass $quiz, stdclass $user, $attemptnumber = 1): array {
         advanced_testcase::setUser($user);
 
         $starttime = time();
@@ -108,9 +108,9 @@ class quiz_heartbeat_test_helper {
      */
     public static function fetch_attempts(stdClass $quiz, stdClass $course): array {
         $cm = get_coursemodule_from_id('quiz', $quiz->cmid);
-        $report = new \quiz_heartbeat_report();
+        $report = new local\heartbeat_report();
         list($currentgroup, $allstudentjoins, $groupstudentjoins, $allowedjoins) =
-            $report->init('heartbeat', 'quiz_heartbeat_form', $quiz, $cm, $course);
+            $report->init('heartbeat', 'quiz_heartbeat\form\heartbeat_form', $quiz, $cm, $course);
 
         return $report->get_pending_attempts($groupstudentjoins);
     }

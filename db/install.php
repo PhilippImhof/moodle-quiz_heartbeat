@@ -27,7 +27,7 @@
 /**
  * Post-install script
  */
-function xmldb_quiz_heartbeat_install(): void {
+function xmldb_quiz_heartbeat_install(): bool {
     global $DB;
 
     $record = (object)[
@@ -35,5 +35,5 @@ function xmldb_quiz_heartbeat_install(): void {
         'displayorder' => '5000',
     ];
 
-    $DB->insert_record('quiz_reports', $record);
+    return $DB->insert_record('quiz_reports', $record);
 }

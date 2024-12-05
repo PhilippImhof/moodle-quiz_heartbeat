@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.0.1 (2024-12-05)
+
+- internal: changes after approval review for Moodle Plugins directory
+
 ### 1.0.0 (2024-12-02)
 
 Initial release. Main features:

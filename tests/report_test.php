@@ -20,7 +20,6 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once($CFG->dirroot . '/mod/quiz/tests/quiz_question_helper_test_trait.php');
-require_once($CFG->dirroot . '/mod/quiz/report/heartbeat/heartbeat_options.php');
 require_once($CFG->dirroot . '/mod/quiz/report/heartbeat/report.php');
 require_once($CFG->dirroot . '/mod/quiz/report/heartbeat/tests/helper.php');
 require_once($CFG->dirroot . '/mod/quiz/report/reportlib.php');
