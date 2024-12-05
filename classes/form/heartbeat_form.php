@@ -25,9 +25,9 @@
 
 namespace quiz_heartbeat\form;
 
-
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->libdir . '/formslib.php');
 
 /**
  * Quiz heartbeat report settings form.
@@ -36,9 +36,6 @@ defined('MOODLE_INTERNAL') || die();
  * @author    Philipp E. Imhof
  * @license   https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-require_once($CFG->libdir . '/formslib.php');
-
 class heartbeat_form extends \moodleform {
 
     /**
