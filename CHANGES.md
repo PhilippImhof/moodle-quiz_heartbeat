@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.0.1.post0 (2024-12-10)
+
+- internal: fix automatic upload of new releases to plugin directory
+
 ### 1.0.1 (2024-12-05)
 
 - internal: changes after approval review for Moodle Plugins directory
