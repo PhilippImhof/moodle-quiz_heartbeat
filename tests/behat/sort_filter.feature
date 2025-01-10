@@ -83,3 +83,15 @@ Feature: Check settings of the display table
     Then I should see "Alan Anderson" in the "#heartbeatoverview_r0" "css_element"
     And I should see "Jane Foo" in the "#heartbeatoverview_r1" "css_element"
     And I should see "John Doe" in the "#heartbeatoverview_r2" "css_element"
+
+  Scenario: Sorting by time since last contact
+    When I am on the "Quiz 1" "quiz_heartbeat > heartbeat report" page logged in as "teacher1"
+    Then I should see "Alan Anderson" in the "#heartbeatoverview_r0" "css_element"
+    And I should see "John Doe" in the "#heartbeatoverview_r1" "css_element"
+    And I should see "Jane Foo" in the "#heartbeatoverview_r2" "css_element"
+    # We cannot know for sure in what order the names will appear, so we don't check the sort order.
+    # But we still do the sorting to make sure that there is no error in the DB query.
+    When I follow "Time since last contact"
+    Then I should see "Alan Anderson"
+    When I follow "Time since last contact"
+    Then I should see "Alan Anderson"
