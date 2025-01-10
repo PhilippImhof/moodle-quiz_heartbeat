@@ -185,7 +185,7 @@ class heartbeat_report extends \quiz_heartbeat_report_parent_alias {
         }
         switch ($this->options->tsort) {
             case 'time':
-                $sort = "st.timecreated $sortdir";
+                $sort = "timecreated $sortdir";
                 break;
             case 'lastname':
                 $sort = "u.lastname $sortdir, u.firstname $sortdir";
@@ -197,17 +197,16 @@ class heartbeat_report extends \quiz_heartbeat_report_parent_alias {
 
         // Parameters for the SQL query will include the quiz' ID for sure.
         $params = ['iquizid' => $this->quiz->id, 'quizid' => $this->quiz->id];
-        $innerparams = ['uquizid' => $this->quiz->id];
 
         // The user may choose to filter the table by the initial of the first and/or last name.
         // We use 'AND' at the start of the condition, because we place it after other conditions.
         $nameconditions = '';
         if (!empty($this->options->tifirst) && preg_match('/[A-Z]/i', $this->options->tifirst)) {
-            $nameconditions .= "AND u.firstname LIKE :initialfirstname";
+            $nameconditions .= 'AND ' . $DB->sql_like('u.firstname', ':initialfirstname', false);
             $params = $params + ['initialfirstname' => $this->options->tifirst . '%'];
         }
         if (!empty($this->options->tilast) && preg_match('/[A-Z]/i', $this->options->tilast)) {
-            $nameconditions .= "AND u.lastname LIKE :initiallastname";
+            $nameconditions .= 'AND ' . $DB->sql_like('u.lastname', ':initiallastname', false);
             $params = $params + ['initiallastname' => $this->options->tilast . '%'];
         }
 
