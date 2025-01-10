@@ -16,6 +16,8 @@
 
 namespace quiz_heartbeat;
 
+use Generator;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -338,5 +340,185 @@ final class report_test extends \advanced_testcase {
 
         $fetchedattempts = quiz_heartbeat_test_helper::fetch_attempts($quizzes[1], $course);
         self::assertEquals($laterresponsetime, reset($fetchedattempts)->timecreated);
+    }
+
+    public static function provide_sort_orders(): Generator {
+        yield [
+            'MüllerMarazzoDupontDoe',
+            ['field' => 'lastname', 'order' => SORT_DESC]
+        ];
+        yield [
+            'DoeDupontMarazzoMüller',
+            ['field' => 'lastname', 'order' => SORT_ASC]
+        ];
+        yield [
+            'MarazzoDoeDupontMüller',
+            ['field' => 'firstname', 'order' => SORT_DESC]
+        ];
+        yield [
+            'MüllerDupontDoeMarazzo',
+            ['field' => 'firstname', 'order' => SORT_ASC]
+        ];
+        yield [
+            'DupontMüllerDoeMarazzo',
+            ['field' => 'time', 'order' => SORT_DESC]
+        ];
+        yield [
+            'MarazzoDoeMüllerDupont',
+            ['field' => 'time', 'order' => SORT_ASC]
+        ];
+    }
+
+    /**
+     * @dataProvider provide_sort_orders
+     */
+    public function test_sorting($expeced, $criteria): void {
+        $this->resetAfterTest();
+
+        // Create a course and a quiz with two regular questions.
+        $generator = $this->getDataGenerator();
+        $questiongenerator = $this->getDataGenerator()->get_plugin_generator('core_question');
+        $course = $generator->create_course();
+        $quiz = $this->create_test_quiz($course);
+        $this->add_two_regular_questions($questiongenerator, $quiz);
+
+        // Add some students and start attempts.
+        $students = quiz_heartbeat_test_helper::add_students($course);
+        foreach ($students as $i => $student) {
+            $this->setUser($student);
+            // Return will be array containing $quizobj, $quba, $attemptobj.
+            $attempts[$i] = quiz_heartbeat_test_helper::start_attempt_at_quiz($quiz, $student);
+        }
+
+        // Post answers in other order, because we don't want time based sorting to be the same as
+        // name based.
+        foreach ([1, 3, 0, 2] as $studentnumber) {
+            // Only sleep if sorting by time.
+            if ($criteria['field'] === 'time') {
+                sleep(1);
+            }
+            $tosubmit = [
+                1 => ['answer' => 'Here we go.'],
+                2 => ['answer' => "$studentnumber"],
+            ];
+            $this->setUser($students[$studentnumber]);
+            $attempts[$studentnumber][2]->process_submitted_actions(time(), false, $tosubmit);
+        }
+
+        $cm = get_coursemodule_from_id('quiz', $quiz->cmid);
+        $report = new local\heartbeat_report();
+        list($currentgroup, $allstudentjoins, $groupstudentjoins, $allowedjoins) =
+            $report->init('heartbeat', 'quiz_heartbeat\form\heartbeat_form', $quiz, $cm, $course);
+
+        // Use reflection to force shortening of names.
+        $reflectedreport = new \ReflectionClass($report);
+        $reflectedoptions = $reflectedreport->getProperty('options');
+        $reflectedoptions->setAccessible(true);
+        $options = new local\heartbeat_options('heartbeat', $quiz, $cm, $course);
+        $options->tsort = $criteria['field'];
+        $options->tdir = $criteria['order'];
+        $reflectedoptions->setValue($report, $options);
+
+        // Fetch the attemps using the report's API.
+        $fetchedattempts = $report->get_pending_attempts($groupstudentjoins);
+        $sorting = array_reduce($fetchedattempts, function ($carry, $item) { return $carry .= $item->lastname; }, '');;
+        self::assertEquals($expeced, $sorting);
+    }
+
+    public static function provide_filter_conditions(): Generator {
+        yield [
+            'MarazzoMüller',
+            ['field' => 'tilast', 'initial' => 'M']
+        ];
+        yield [
+            'DoeDupont',
+            ['field' => 'tilast', 'initial' => 'D']
+        ];
+        yield [
+            'MarazzoMüller',
+            ['field' => 'tilast', 'initial' => 'm']
+        ];
+        yield [
+            'DoeDupont',
+            ['field' => 'tilast', 'initial' => 'd']
+        ];
+        yield [
+            '',
+            ['field' => 'tilast', 'initial' => 'x']
+        ];
+        yield [
+            'DoeDupont',
+            ['field' => 'tifirst', 'initial' => 'J']
+        ];
+        yield [
+            'Marazzo',
+            ['field' => 'tifirst', 'initial' => 'P']
+        ];
+        yield [
+            'Müller',
+            ['field' => 'tifirst', 'initial' => 'G']
+        ];
+        yield [
+            'DoeDupont',
+            ['field' => 'tifirst', 'initial' => 'j']
+        ];
+        yield [
+            'Marazzo',
+            ['field' => 'tifirst', 'initial' => 'p']
+        ];
+        yield [
+            'Müller',
+            ['field' => 'tifirst', 'initial' => 'g']
+        ];
+        yield [
+            '',
+            ['field' => 'tifirst', 'initial' => 'z']
+        ];
+    }
+
+    /**
+     * @dataProvider provide_filter_conditions
+     */
+    public function test_filtering($expeced, $criteria): void {
+        $this->resetAfterTest();
+
+        // Create a course and a quiz with two regular questions.
+        $generator = $this->getDataGenerator();
+        $questiongenerator = $this->getDataGenerator()->get_plugin_generator('core_question');
+        $course = $generator->create_course();
+        $quiz = $this->create_test_quiz($course);
+        $this->add_two_regular_questions($questiongenerator, $quiz);
+
+        // Add some students and start attempts.
+        $students = quiz_heartbeat_test_helper::add_students($course);
+        foreach ($students as $i => $student) {
+            $this->setUser($student);
+            // Return will be array containing $quizobj, $quba, $attemptobj.
+            $attempts[$i] = quiz_heartbeat_test_helper::start_attempt_at_quiz($quiz, $student);
+            $tosubmit = [
+                1 => ['answer' => 'Here we go.'],
+                2 => ['answer' => 1],
+            ];
+            $this->setUser($student);
+            $attempts[$i][2]->process_submitted_actions(time(), false, $tosubmit);
+        }
+
+        $cm = get_coursemodule_from_id('quiz', $quiz->cmid);
+        $report = new local\heartbeat_report();
+        list($currentgroup, $allstudentjoins, $groupstudentjoins, $allowedjoins) =
+            $report->init('heartbeat', 'quiz_heartbeat\form\heartbeat_form', $quiz, $cm, $course);
+
+        // Use reflection to force shortening of names.
+        $reflectedreport = new \ReflectionClass($report);
+        $reflectedoptions = $reflectedreport->getProperty('options');
+        $reflectedoptions->setAccessible(true);
+        $options = new local\heartbeat_options('heartbeat', $quiz, $cm, $course);
+        $options->{$criteria['field']} = $criteria['initial'];
+        $reflectedoptions->setValue($report, $options);
+
+        // Fetch the attemps using the report's API.
+        $fetchedattempts = $report->get_pending_attempts($groupstudentjoins);
+        $sorting = array_reduce($fetchedattempts, function ($carry, $item) { return $carry .= $item->lastname; }, '');;
+        self::assertEquals($expeced, $sorting);
     }
 }
