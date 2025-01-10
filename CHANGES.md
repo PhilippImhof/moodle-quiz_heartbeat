@@ -1,5 +1,10 @@
 # Changelog
 
+### 1.0.2 (2025-01-10)
+
+- bugfix: sorting by time elapsed now also working with PostgreSQL
+- internal: add tests for sorting and filtering
+
 ### 1.0.1.post0 (2024-12-10)
 
 - internal: fix automatic upload of new releases to plugin directory
