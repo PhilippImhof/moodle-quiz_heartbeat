@@ -185,7 +185,7 @@ class heartbeat_report extends \quiz_heartbeat_report_parent_alias {
         }
         switch ($this->options->tsort) {
             case 'time':
-                $sort = "timecreated $sortdir";
+                $sort = "st.timecreated $sortdir";
                 break;
             case 'lastname':
                 $sort = "u.lastname $sortdir, u.firstname $sortdir";
