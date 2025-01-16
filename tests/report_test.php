@@ -342,35 +342,46 @@ final class report_test extends \advanced_testcase {
         self::assertEquals($laterresponsetime, reset($fetchedattempts)->timecreated);
     }
 
+    /**
+     * Provide data to test sorting.
+     *
+     * @return Generator
+     */
     public static function provide_sort_orders(): Generator {
         yield [
             'MüllerMarazzoDupontDoe',
-            ['field' => 'lastname', 'order' => SORT_DESC]
+            ['field' => 'lastname', 'order' => SORT_DESC],
         ];
         yield [
             'DoeDupontMarazzoMüller',
-            ['field' => 'lastname', 'order' => SORT_ASC]
+            ['field' => 'lastname', 'order' => SORT_ASC],
         ];
         yield [
             'MarazzoDoeDupontMüller',
-            ['field' => 'firstname', 'order' => SORT_DESC]
+            ['field' => 'firstname', 'order' => SORT_DESC],
         ];
         yield [
             'MüllerDupontDoeMarazzo',
-            ['field' => 'firstname', 'order' => SORT_ASC]
+            ['field' => 'firstname', 'order' => SORT_ASC],
         ];
         yield [
             'DupontMüllerDoeMarazzo',
-            ['field' => 'time', 'order' => SORT_DESC]
+            ['field' => 'time', 'order' => SORT_DESC],
         ];
         yield [
             'MarazzoDoeMüllerDupont',
-            ['field' => 'time', 'order' => SORT_ASC]
+            ['field' => 'time', 'order' => SORT_ASC],
         ];
     }
 
     /**
+     * Test sorting by name or time elapsed.
+     *
      * @dataProvider provide_sort_orders
+     *
+     * @param string $expected expected order of names
+     * @param array $criteria which column (firstname, lastname, time) to sort and what way (ASC/DESC)
+     * @return void
      */
     public function test_sorting($expeced, $criteria): void {
         $this->resetAfterTest();
@@ -421,63 +432,76 @@ final class report_test extends \advanced_testcase {
 
         // Fetch the attemps using the report's API.
         $fetchedattempts = $report->get_pending_attempts($groupstudentjoins);
-        $sorting = array_reduce($fetchedattempts, function ($carry, $item) { return $carry .= $item->lastname; }, '');;
+        $sorting = array_reduce($fetchedattempts, function ($carry, $item) {
+            return $carry .= $item->lastname;
+        }, '');;
         self::assertEquals($expeced, $sorting);
     }
 
+    /**
+     * Provide data to test filtering by first or last name.
+     *
+     * @return Generator
+     */
     public static function provide_filter_conditions(): Generator {
         yield [
             'MarazzoMüller',
-            ['field' => 'tilast', 'initial' => 'M']
+            ['field' => 'tilast', 'initial' => 'M'],
         ];
         yield [
             'DoeDupont',
-            ['field' => 'tilast', 'initial' => 'D']
+            ['field' => 'tilast', 'initial' => 'D'],
         ];
         yield [
             'MarazzoMüller',
-            ['field' => 'tilast', 'initial' => 'm']
+            ['field' => 'tilast', 'initial' => 'm'],
         ];
         yield [
             'DoeDupont',
-            ['field' => 'tilast', 'initial' => 'd']
+            ['field' => 'tilast', 'initial' => 'd'],
         ];
         yield [
             '',
-            ['field' => 'tilast', 'initial' => 'x']
+            ['field' => 'tilast', 'initial' => 'x'],
         ];
         yield [
             'DoeDupont',
-            ['field' => 'tifirst', 'initial' => 'J']
+            ['field' => 'tifirst', 'initial' => 'J'],
         ];
         yield [
             'Marazzo',
-            ['field' => 'tifirst', 'initial' => 'P']
+            ['field' => 'tifirst', 'initial' => 'P'],
         ];
         yield [
             'Müller',
-            ['field' => 'tifirst', 'initial' => 'G']
+            ['field' => 'tifirst', 'initial' => 'G'],
         ];
         yield [
             'DoeDupont',
-            ['field' => 'tifirst', 'initial' => 'j']
+            ['field' => 'tifirst', 'initial' => 'j'],
         ];
         yield [
             'Marazzo',
-            ['field' => 'tifirst', 'initial' => 'p']
+            ['field' => 'tifirst', 'initial' => 'p'],
         ];
         yield [
             'Müller',
-            ['field' => 'tifirst', 'initial' => 'g']
+            ['field' => 'tifirst', 'initial' => 'g'],
         ];
         yield [
             '',
-            ['field' => 'tifirst', 'initial' => 'z']
+            ['field' => 'tifirst', 'initial' => 'z'],
         ];
     }
 
     /**
+     * Test filtering by initial of first or last name.
+     *
      * @dataProvider provide_filter_conditions
+     *
+     * @param string $expected expected order of names
+     * @param array $criteria which field (tifirst, tilast) to filter and what letter to use
+     * @return void
      */
     public function test_filtering($expeced, $criteria): void {
         $this->resetAfterTest();
