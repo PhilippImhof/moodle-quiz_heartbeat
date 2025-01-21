@@ -383,7 +383,7 @@ final class report_test extends \advanced_testcase {
      * @param array $criteria which column (firstname, lastname, time) to sort and what way (ASC/DESC)
      * @return void
      */
-    public function test_sorting($expeced, $criteria): void {
+    public function test_sorting($expected, $criteria): void {
         $this->resetAfterTest();
 
         // Create a course and a quiz with two regular questions.
@@ -434,8 +434,8 @@ final class report_test extends \advanced_testcase {
         $fetchedattempts = $report->get_pending_attempts($groupstudentjoins);
         $sorting = array_reduce($fetchedattempts, function ($carry, $item) {
             return $carry .= $item->lastname;
-        }, '');;
-        self::assertEquals($expeced, $sorting);
+        }, '');
+        self::assertEquals($expected, $sorting);
     }
 
     /**
@@ -503,7 +503,7 @@ final class report_test extends \advanced_testcase {
      * @param array $criteria which field (tifirst, tilast) to filter and what letter to use
      * @return void
      */
-    public function test_filtering($expeced, $criteria): void {
+    public function test_filtering($expected, $criteria): void {
         $this->resetAfterTest();
 
         // Create a course and a quiz with two regular questions.
@@ -542,7 +542,9 @@ final class report_test extends \advanced_testcase {
 
         // Fetch the attemps using the report's API.
         $fetchedattempts = $report->get_pending_attempts($groupstudentjoins);
-        $sorting = array_reduce($fetchedattempts, function ($carry, $item) { return $carry .= $item->lastname; }, '');;
-        self::assertEquals($expeced, $sorting);
+        $sorting = array_reduce($fetchedattempts, function ($carry, $item) {
+            return $carry .= $item->lastname;
+        }, '');
+        self::assertEquals($expected, $sorting);
     }
 }
