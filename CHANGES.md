@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.0.3.post0 (2025-01-21)
+
+- internal: fixed remaining codesniffer warnings/errors
+
 ### 1.0.3 (2025-01-21)
 
 - internal: fix typo in language strings
