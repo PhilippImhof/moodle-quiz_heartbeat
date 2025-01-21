@@ -1,5 +1,10 @@
 # Changelog
 
+### 1.0.3 (2025-01-21)
+
+- internal: fix typo in language strings
+- internal: fix codesniffer warnings/errors
+
 ### 1.0.2 (2025-01-10)
 
 - bugfix: sorting by time elapsed now also working with PostgreSQL
