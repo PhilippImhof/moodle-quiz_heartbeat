@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.0.4 (2025-04-14)
+
+- assure compatibility with Moodle 5.0
+
 ### 1.0.3.post0 (2025-01-21)
 
 - internal: fixed remaining codesniffer warnings/errors

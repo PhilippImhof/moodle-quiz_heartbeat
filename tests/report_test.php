@@ -104,7 +104,12 @@ final class report_test extends \advanced_testcase {
         self::assertCount(count($students), $fetchedattempts);
 
         // Now, finish the first student's attempt, refetch and make sure one attempt is gone.
-        $attempts[0][2]->process_finish($responsetime, false);
+        // Note: The if/else can be removed as soon as 5.0 is the lowest supported version.
+        if (method_exists($attempts[0][2], 'process_submit')) {
+            $attempts[0][2]->process_submit($responsetime, false);
+        } else {
+            $attempts[0][2]->process_finish($responsetime, false);
+        }
         $fetchedattempts = quiz_heartbeat_test_helper::fetch_attempts($quiz, $course);
         self::assertCount(count($students) - 1, $fetchedattempts);
     }
@@ -145,7 +150,12 @@ final class report_test extends \advanced_testcase {
 
         // Finish second quiz.
         $finishtime = time() + 10;
-        $attempts[1][2]->process_finish($finishtime, false);
+        // Note: The if/else can be removed as soon as 5.0 is the lowest supported version.
+        if (method_exists($attempts[1][2], 'process_submit')) {
+            $attempts[1][2]->process_submit($finishtime, false);
+        } else {
+            $attempts[1][2]->process_finish($finishtime, false);
+        }
 
         // Fetch attempts for first quiz. There must be only one and the timestamp must match
         // the response time.
