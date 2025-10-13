@@ -428,7 +428,7 @@ final class report_test extends \advanced_testcase {
 
         $cm = get_coursemodule_from_id('quiz', $quiz->cmid);
         $report = new local\heartbeat_report();
-        list($currentgroup, $allstudentjoins, $groupstudentjoins, $allowedjoins) =
+        [$currentgroup, $allstudentjoins, $groupstudentjoins, $allowedjoins] =
             $report->init('heartbeat', 'quiz_heartbeat\form\heartbeat_form', $quiz, $cm, $course);
 
         // Use reflection to force shortening of names.
@@ -539,7 +539,7 @@ final class report_test extends \advanced_testcase {
 
         $cm = get_coursemodule_from_id('quiz', $quiz->cmid);
         $report = new local\heartbeat_report();
-        list($currentgroup, $allstudentjoins, $groupstudentjoins, $allowedjoins) =
+        [$currentgroup, $allstudentjoins, $groupstudentjoins, $allowedjoins] =
             $report->init('heartbeat', 'quiz_heartbeat\form\heartbeat_form', $quiz, $cm, $course);
 
         // Use reflection to force shortening of names.

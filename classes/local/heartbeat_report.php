@@ -53,7 +53,6 @@ if (class_exists('\mod_quiz\local\reports\attempts_report')) {
  * @license   https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class heartbeat_report extends \quiz_heartbeat_report_parent_alias {
-
     /** @var object course object */
     protected object $course;
 
@@ -91,7 +90,7 @@ class heartbeat_report extends \quiz_heartbeat_report_parent_alias {
         global $DB;
 
         // First, we call the parent init function...
-        list($currentgroup, $allstudentjoins, $groupstudentjoins, $allowedjoins) =
+        [$currentgroup, $allstudentjoins, $groupstudentjoins, $allowedjoins] =
             parent::init($mode, $formclass, $quiz, $cm, $course);
 
         $this->options = new heartbeat_options('heartbeat', $quiz, $cm, $course);

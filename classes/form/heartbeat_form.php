@@ -37,7 +37,6 @@ require_once($CFG->libdir . '/formslib.php');
  * @license   https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class heartbeat_form extends \moodleform {
-
     /**
      * Form definition.
      *

@@ -44,7 +44,6 @@ if (class_exists('\mod_quiz\local\reports\attempts_report_options')) {
  * @license   https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class heartbeat_options extends \quiz_heartbeat_options_parent_class_alias {
-
     /** @var int whether to do ascending or descending sort */
     public int $tdir = SORT_ASC;
 
