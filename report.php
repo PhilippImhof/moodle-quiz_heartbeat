@@ -28,5 +28,4 @@ require_once($CFG->dirroot . '/mod/quiz/report/heartbeat/classes/local/heartbeat
  * @license   https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class quiz_heartbeat_report extends \quiz_heartbeat\local\heartbeat_report {
-
 }

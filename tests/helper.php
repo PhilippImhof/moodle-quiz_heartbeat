@@ -118,7 +118,7 @@ class quiz_heartbeat_test_helper {
     public static function fetch_attempts(stdClass $quiz, stdClass $course): array {
         $cm = get_coursemodule_from_id('quiz', $quiz->cmid);
         $report = new local\heartbeat_report();
-        list($currentgroup, $allstudentjoins, $groupstudentjoins, $allowedjoins) =
+        [$currentgroup, $allstudentjoins, $groupstudentjoins, $allowedjoins] =
             $report->init('heartbeat', 'quiz_heartbeat\form\heartbeat_form', $quiz, $cm, $course);
 
         return $report->get_pending_attempts($groupstudentjoins);
