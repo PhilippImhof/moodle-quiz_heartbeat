@@ -1,5 +1,11 @@
 # Changelog
 
+### 1.0.5 (2025-10-13)
+
+- assure compatibility with Moodle 5.1
+- internal: add PHP 8.4 to CI
+- internal: fix codesniffer warnings/errors
+
 ### 1.0.4 (2025-04-14)
 
 - assure compatibility with Moodle 5.0
