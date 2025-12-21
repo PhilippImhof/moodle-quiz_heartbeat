@@ -81,7 +81,7 @@ class quiz_heartbeat_test_helper {
         $attempt = quiz_create_attempt($quizobj, $attemptnumber, null, $starttime, false, $user->id);
         quiz_start_new_attempt($quizobj, $quba, $attempt, $attemptnumber, $starttime);
         quiz_attempt_save_started($quizobj, $quba, $attempt);
-        $attemptobj = \quiz_heartbeat_quiz_attempt_alias::create($attempt->id);
+        $attemptobj = \mod_quiz\quiz_attempt::create($attempt->id);
 
         // Render each question. This is needed, because starting with Moodle 5.0, the timecreated field
         // of the first question_attempt_step is not automatically set when the attempt is created, but
