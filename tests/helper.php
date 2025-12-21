@@ -28,16 +28,6 @@ namespace quiz_heartbeat;
 use advanced_testcase;
 use stdClass;
 
-defined('MOODLE_INTERNAL') || die();
-
-// This work-around is required until Moodle 4.2 is the lowest version we support.
-if (class_exists('\mod_quiz\quiz_settings')) {
-    class_alias('\mod_quiz\quiz_settings', '\quiz_heartbeat_quiz_settings_alias');
-} else {
-    require_once($CFG->dirroot . '/mod/quiz/classes/plugininfo/quiz.php');
-    class_alias('\quiz', '\quiz_heartbeat_quiz_settings_alias');
-}
-
 /**
  * Helper class providing some useful methods for Essay responses downloader plugin unit
  * tests (quiz_heartbeat).
@@ -82,7 +72,7 @@ class quiz_heartbeat_test_helper {
         advanced_testcase::setUser($user);
 
         $starttime = time();
-        $quizobj = \quiz_heartbeat_quiz_settings_alias::create($quiz->id, $user->id);
+        $quizobj = \mod_quiz\quiz_settings::create($quiz->id, $user->id);
 
         $quba = \question_engine::make_questions_usage_by_activity('mod_quiz', $quizobj->get_context());
         $quba->set_preferred_behaviour($quizobj->get_quiz()->preferredbehaviour);
