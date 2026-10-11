@@ -136,7 +136,7 @@ class heartbeat_report extends \mod_quiz\local\reports\attempts_report {
             $this->cm,
             $this->course,
             $this->quiz,
-            $this->options,
+            null,
             $this->currentgroup,
             true,
             true,
