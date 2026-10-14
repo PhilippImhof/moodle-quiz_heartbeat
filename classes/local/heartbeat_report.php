@@ -188,7 +188,7 @@ class heartbeat_report extends \mod_quiz\local\reports\attempts_report {
             $this->course,
         );
         $newtable = new heartbeat_table(
-            'heartbeat',
+            'heartbeatoverview',
             $this->quiz,
             $this->context,
             $this->options,
@@ -196,6 +196,7 @@ class heartbeat_report extends \mod_quiz\local\reports\attempts_report {
             $groupstudentsjoins,
             $PAGE->url,
         );
+        $newtable->set_attribute('id', 'heartbeatoverview');
         $newtable->setup();
         $newtable->setup_sql_queries($allowedjoins);
 

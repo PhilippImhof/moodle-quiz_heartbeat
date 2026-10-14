@@ -70,7 +70,8 @@ Feature: Check settings of the display table pre 5.3
   Scenario: Filtering by initial of first or last name for 5.3+
     Given the site is running Moodle version 5.3 or higher
     When I am on the "Quiz 1" "quiz_heartbeat > heartbeat report" page logged in as "teacher1"
-    Then I should see "Alan Anderson" in the "#heartbeatoverview_r0" "css_element"
+    Then "" "quiz_heartbeat > Legacy initials bars" should not exist
+    And I should see "Alan Anderson" in the "#heartbeatoverview_r0" "css_element"
     And I should see "John Doe" in the "#heartbeatoverview_r1" "css_element"
     And I should see "Jane Foo" in the "#heartbeatoverview_r2" "css_element"
     And I select "J" in the "First name" "core_grades > initials bar"
@@ -96,10 +97,11 @@ Feature: Check settings of the display table pre 5.3
 
   Scenario: Sorting by first or last name
     When I am on the "Quiz 1" "quiz_heartbeat > heartbeat report" page logged in as "teacher1"
+    And I follow "Last name"
     Then I should see "Alan Anderson" in the "#heartbeatoverview_r0" "css_element"
     And I should see "John Doe" in the "#heartbeatoverview_r1" "css_element"
     And I should see "Jane Foo" in the "#heartbeatoverview_r2" "css_element"
-    And I follow "Last name"
+    When I follow "Last name"
     And I should see "Jane Foo" in the "#heartbeatoverview_r0" "css_element"
     And I should see "John Doe" in the "#heartbeatoverview_r1" "css_element"
     Then I should see "Alan Anderson" in the "#heartbeatoverview_r2" "css_element"
