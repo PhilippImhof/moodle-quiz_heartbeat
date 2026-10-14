@@ -74,6 +74,7 @@ Feature: Check settings of the display table pre 5.3
     And I should see "Alan Anderson" in the "#heartbeatoverview_r0" "css_element"
     And I should see "John Doe" in the "#heartbeatoverview_r1" "css_element"
     And I should see "Jane Foo" in the "#heartbeatoverview_r2" "css_element"
+    When I click on "Filter by name" "combobox"
     And I select "J" in the "First name" "core_grades > initials bar"
     And I press "Apply"
     Then the following should not exist in the "heartbeatoverview" table:
@@ -83,7 +84,8 @@ Feature: Check settings of the display table pre 5.3
     Then the following should exist in the "heartbeatoverview" table:
       | -1-           |
       | Alan Anderson |
-    When I select "F" in the "Last name" "core_grades > initials bar"
+    When I click on "Filter by name" "combobox"
+    And I select "F" in the "Last name" "core_grades > initials bar"
     And I press "Apply"
     Then the following should not exist in the "heartbeatoverview" table:
       | -1-           |

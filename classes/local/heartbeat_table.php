@@ -218,7 +218,8 @@ class heartbeat_table extends \table_sql {
                        WHERE ia.quiz = :iquizid AND ia.state = 'inprogress'
                     GROUP BY ist.userid
                 )
-            GROUP BY st.userid, u.firstname, u.lastname, u.firstnamephonetic, u.lastnamephonetic, u.middlename, u.alternatename";
+            GROUP BY st.userid,
+                     u.id, u.firstname, u.lastname, u.firstnamephonetic, u.lastnamephonetic, u.middlename, u.alternatename";
 
         // FIXME: sorting!
 
