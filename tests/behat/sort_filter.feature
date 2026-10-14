@@ -1,5 +1,5 @@
 @quiz @quiz_heartbeat @javascript
-Feature: Check settings of the display table
+Feature: Check settings of the display table pre 5.3
 
   Background:
     Given the following "courses" exist:
@@ -42,7 +42,8 @@ Feature: Check settings of the display table
       | slot | response  |
       | 1    | Foo Bar 3 |
 
-  Scenario: Filtering by initial of first or name
+  Scenario: Filtering by initial of first or last name pre 5.3
+    Given the site is running Moodle version 5.2 or lower
     When I am on the "Quiz 1" "quiz_heartbeat > heartbeat report" page logged in as "teacher1"
     Then I should see "Alan Anderson" in the "#heartbeatoverview_r0" "css_element"
     And I should see "John Doe" in the "#heartbeatoverview_r1" "css_element"
@@ -61,6 +62,33 @@ Feature: Check settings of the display table
       | Alan Anderson |
       | John Doe      |
     When I follow "Reset table preferences"
+    Then the following should exist in the "heartbeatoverview" table:
+      | -1-           |
+      | Alan Anderson |
+      | John Doe      |
+
+  Scenario: Filtering by initial of first or last name for 5.3+
+    Given the site is running Moodle version 5.3 or higher
+    When I am on the "Quiz 1" "quiz_heartbeat > heartbeat report" page logged in as "teacher1"
+    Then I should see "Alan Anderson" in the "#heartbeatoverview_r0" "css_element"
+    And I should see "John Doe" in the "#heartbeatoverview_r1" "css_element"
+    And I should see "Jane Foo" in the "#heartbeatoverview_r2" "css_element"
+    And I select "J" in the "First name" "core_grades > initials bar"
+    And I press "Apply"
+    Then the following should not exist in the "heartbeatoverview" table:
+      | -1-           |
+      | Alan Anderson |
+    When I follow "Clear all"
+    Then the following should exist in the "heartbeatoverview" table:
+      | -1-           |
+      | Alan Anderson |
+    When I select "F" in the "Last name" "core_grades > initials bar"
+    And I press "Apply"
+    Then the following should not exist in the "heartbeatoverview" table:
+      | -1-           |
+      | Alan Anderson |
+      | John Doe      |
+    When I follow "Clear all"
     Then the following should exist in the "heartbeatoverview" table:
       | -1-           |
       | Alan Anderson |

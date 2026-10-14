@@ -427,21 +427,14 @@ final class report_test extends \advanced_testcase {
         }
 
         $cm = get_coursemodule_from_id('quiz', $quiz->cmid);
-        $report = new local\heartbeat_report();
-        [$currentgroup, $allstudentjoins, $groupstudentjoins, $allowedjoins] =
-            $report->init('heartbeat', 'quiz_heartbeat\form\heartbeat_form', $quiz, $cm, $course);
 
-        // Use reflection to force shortening of names.
-        $reflectedreport = new \ReflectionClass($report);
-        $reflectedoptions = $reflectedreport->getProperty('options');
-        $reflectedoptions->setAccessible(true);
         $options = new local\heartbeat_options('heartbeat', $quiz, $cm, $course);
         $options->tsort = $criteria['field'];
         $options->tdir = $criteria['order'];
-        $reflectedoptions->setValue($report, $options);
 
-        // Fetch the attemps using the report's API.
-        $fetchedattempts = $report->get_pending_attempts($groupstudentjoins);
+
+
+        $fetchedattempts = quiz_heartbeat_test_helper::fetch_attempts($quiz, $course, $options);
         $sorting = array_reduce($fetchedattempts, function ($carry, $item) {
             return $carry .= $item->lastname;
         }, '');
@@ -456,51 +449,51 @@ final class report_test extends \advanced_testcase {
     public static function provide_filter_conditions(): Generator {
         yield [
             'MarazzoMüller',
-            ['field' => 'tilast', 'initial' => 'M'],
+            ['field' => 'lastinitial', 'initial' => 'M'],
         ];
         yield [
             'DoeDupont',
-            ['field' => 'tilast', 'initial' => 'D'],
+            ['field' => 'lastinitial', 'initial' => 'D'],
         ];
         yield [
             'MarazzoMüller',
-            ['field' => 'tilast', 'initial' => 'm'],
+            ['field' => 'lastinitial', 'initial' => 'm'],
         ];
         yield [
             'DoeDupont',
-            ['field' => 'tilast', 'initial' => 'd'],
+            ['field' => 'lastinitial', 'initial' => 'd'],
         ];
         yield [
             '',
-            ['field' => 'tilast', 'initial' => 'x'],
+            ['field' => 'lastinitial', 'initial' => 'x'],
         ];
         yield [
             'DoeDupont',
-            ['field' => 'tifirst', 'initial' => 'J'],
+            ['field' => 'firstinitial', 'initial' => 'J'],
         ];
         yield [
             'Marazzo',
-            ['field' => 'tifirst', 'initial' => 'P'],
+            ['field' => 'firstinitial', 'initial' => 'P'],
         ];
         yield [
             'Müller',
-            ['field' => 'tifirst', 'initial' => 'G'],
+            ['field' => 'firstinitial', 'initial' => 'G'],
         ];
         yield [
             'DoeDupont',
-            ['field' => 'tifirst', 'initial' => 'j'],
+            ['field' => 'firstinitial', 'initial' => 'j'],
         ];
         yield [
             'Marazzo',
-            ['field' => 'tifirst', 'initial' => 'p'],
+            ['field' => 'firstinitial', 'initial' => 'p'],
         ];
         yield [
             'Müller',
-            ['field' => 'tifirst', 'initial' => 'g'],
+            ['field' => 'firstinitial', 'initial' => 'g'],
         ];
         yield [
             '',
-            ['field' => 'tifirst', 'initial' => 'z'],
+            ['field' => 'firstinitial', 'initial' => 'z'],
         ];
     }
 
@@ -538,23 +531,15 @@ final class report_test extends \advanced_testcase {
         }
 
         $cm = get_coursemodule_from_id('quiz', $quiz->cmid);
-        $report = new local\heartbeat_report();
-        [$currentgroup, $allstudentjoins, $groupstudentjoins, $allowedjoins] =
-            $report->init('heartbeat', 'quiz_heartbeat\form\heartbeat_form', $quiz, $cm, $course);
 
-        // Use reflection to force shortening of names.
-        $reflectedreport = new \ReflectionClass($report);
-        $reflectedoptions = $reflectedreport->getProperty('options');
-        $reflectedoptions->setAccessible(true);
         $options = new local\heartbeat_options('heartbeat', $quiz, $cm, $course);
         $options->{$criteria['field']} = $criteria['initial'];
-        $reflectedoptions->setValue($report, $options);
 
-        // Fetch the attemps using the report's API.
-        $fetchedattempts = $report->get_pending_attempts($groupstudentjoins);
-        $sorting = array_reduce($fetchedattempts, function ($carry, $item) {
+        $fetchedattempts = quiz_heartbeat_test_helper::fetch_attempts($quiz, $course, $options);
+
+        $filtering = array_reduce($fetchedattempts, function ($carry, $item) {
             return $carry .= $item->lastname;
         }, '');
-        self::assertEquals($expected, $sorting);
+        self::assertEquals($expected, $filtering);
     }
 }

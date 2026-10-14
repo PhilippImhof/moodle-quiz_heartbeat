@@ -38,13 +38,16 @@ class heartbeat_options extends \mod_quiz\local\reports\attempts_report_options 
     public int $tdir = SORT_ASC;
 
     /** @var string initial of first name for filtering */
-    public string $tifirst = '';
+    public string $firstinitial = '';
 
     /** @var string initial of last name for filtering */
-    public string $tilast = '';
+    public string $lastinitial = '';
 
     /** @var string column used for sorting */
     public string $tsort = 'lastname';
+
+    public $userid = -1;
+    public $usersearch = '';
 
     /**
      * Constructor
@@ -95,8 +98,17 @@ class heartbeat_options extends \mod_quiz\local\reports\attempts_report_options 
      */
     public function setup_from_params() {
         $this->tdir = optional_param('tdir', SORT_ASC, PARAM_INT);
-        $this->tifirst = optional_param('tifirst', '', PARAM_ALPHA);
-        $this->tilast = optional_param('tilast', '', PARAM_ALPHA);
+        $sifirst = optional_param('sifirst', null, PARAM_ALPHA);
+        $silast = optional_param('silast', null, PARAM_ALPHA);
+        if ($sifirst !== null || $silast !== null) {
+            $this->firstinitial = $sifirst ?? '';
+            $this->lastinitial = $silast ?? '';
+        } else {
+            $this->firstinitial = optional_param('tifirst', '', PARAM_ALPHA);
+            $this->lastinitial = optional_param('tilast', '', PARAM_ALPHA);
+        }
         $this->tsort = optional_param('tsort', 'lastname', PARAM_ALPHA);
+        $this->userid = optional_param('userid', '', PARAM_INT);
+        $this->usersearch = optional_param('search', '', PARAM_NOTAGS);
     }
 }

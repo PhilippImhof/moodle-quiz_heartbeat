@@ -105,11 +105,28 @@ class quiz_heartbeat_test_helper {
      * @param stdClass $course the course containing the quiz, created e.g. by create_course()
      * @return array
      */
-    public static function fetch_attempts(stdClass $quiz, stdClass $course): array {
+    public static function fetch_attempts(stdClass $quiz, stdClass $course, local\heartbeat_options $options = null): array {
         $cm = get_coursemodule_from_id('quiz', $quiz->cmid);
         $report = new local\heartbeat_report();
-        [$currentgroup, $allstudentjoins, $groupstudentjoins, $allowedjoins] =
+        [$currentgroup, $allstudentsjoins, $groupstudentsjoins, $allowedjoins] =
             $report->init('heartbeat', 'quiz_heartbeat\form\heartbeat_form', $quiz, $cm, $course);
+
+        if ($options === null) {
+            $options = new local\heartbeat_options('heartbeat', $quiz, $cm, $course);
+        }
+        $table = new local\heartbeat_table(
+            'heartbeat',
+            $quiz,
+            \context_module::instance($cm->id),
+            $options,
+            $groupstudentsjoins,
+            $allstudentsjoins,
+            $options->get_url()
+        );
+        $table->setup();
+        $table->setup_sql_queries($groupstudentsjoins);
+        $table->query_db(0, false);
+        return $table->rawdata;
 
         return $report->get_pending_attempts($groupstudentjoins);
     }
