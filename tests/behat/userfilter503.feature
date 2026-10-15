@@ -82,6 +82,15 @@ Feature: Filter for user name via the action bar widget
     And I wait until "Alice Student1" "option_role" does not exist
     Then I should see "No results for" in the ".usersearchdropdown" "css_element"
 
+  Scenario: Filtering among selected students only, if initials selected
+    When I am on the "Quiz 1" "quiz_heartbeat > heartbeat report" page logged in as "teacher"
+    And I click on "Filter by name" "combobox"
+    And I select "A" in the "First name" "core_grades > initials bar"
+    And I press "Apply"
+    And I set the field "Search users" to "li"
+    And I wait until "Charlie Student3" "option_role" does not exist
+    Then I should see "Alice Student1" in the ".usersearchdropdown" "css_element"
+
   Scenario: Filter for all users matching a string
     When I am on the "Quiz 1" "quiz_heartbeat > heartbeat report" page logged in as "teacher"
     And I set the field "Search users" to "li"
