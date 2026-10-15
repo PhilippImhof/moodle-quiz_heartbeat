@@ -201,6 +201,6 @@ class heartbeat_report extends \mod_quiz\local\reports\attempts_report {
         $newtable->setup_sql_queries($allowedjoins);
 
         $uselegacyinitialsbar = !method_exists($this, 'print_action_bar');
-        $newtable->out(0, $uselegacyinitialsbar);
+        $newtable->out(50, $uselegacyinitialsbar);
     }
 }

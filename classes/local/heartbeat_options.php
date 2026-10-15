@@ -108,7 +108,7 @@ class heartbeat_options extends \mod_quiz\local\reports\attempts_report_options 
             $this->lastinitial = optional_param('tilast', '', PARAM_ALPHA);
         }
         $this->tsort = optional_param('tsort', 'lastname', PARAM_ALPHA);
-        $this->userid = optional_param('userid', '', PARAM_INT);
+        $this->userid = optional_param('userid', -1, PARAM_INT);
         $this->usersearch = optional_param('search', '', PARAM_NOTAGS);
     }
 }

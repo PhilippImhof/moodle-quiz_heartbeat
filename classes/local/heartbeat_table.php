@@ -103,6 +103,11 @@ class heartbeat_table extends \table_sql {
         return $type;
     }
 
+    /*public function pagesize($perpage, $total) {
+        parent::pagesize($perpage, $total);
+        $this->pageable(false);
+    }*/
+
     public function out($pagesize, $useinitialsbar, $downloadhelpbutton = '') {
         $this->currenttime = time();
         parent::out($pagesize, $useinitialsbar);
@@ -193,10 +198,22 @@ class heartbeat_table extends \table_sql {
         }
 
         // FIXME: filter for userid
-        $useridcondition = '';
-        if ($this->options->usersearch !== '' && $this->options->userid !== -1) {
-            $useridcondition = 'AND ' . $DB->sql_equal('u.id', ':userid');
+        $usercondition = '';
+        // If the user filters for a given userid, take this one.
+        if ($this->options->userid !== -1) {
+            $usercondition = 'AND ' . $DB->sql_equal('u.id', ':userid');
             $params = $params + ['userid' => $this->options->userid];
+        }
+
+        // The user can also filter for a certain search string instead. We just search in firstname or lastname.
+        if ($this->options->usersearch !== '' && $this->options->userid === -1) {
+            $firstnamecondition = $DB->sql_like('u.firstname', ':searchstringfirst', false);
+            $lastnamecondition = $DB->sql_like('u.lastname', ':searchstringlast', false);
+            $usercondition = "AND ($firstnamecondition OR $lastnamecondition)";
+            $params = $params + [
+                'searchstringfirst' => "%{$this->options->usersearch}%",
+                'searchstringlast' => "%{$this->options->usersearch}%",
+            ];
         }
 
         // If there are no WHERE clauses (i. e. because no group has been selected), we add a dummy
@@ -208,7 +225,7 @@ class heartbeat_table extends \table_sql {
         $where = "
             $joins->wheres
             $nameconditions
-            $useridcondition
+            $usercondition
             AND a.quiz = :quizid AND a.state = 'inprogress'
             AND st.timecreated in (
                 SELECT MAX(ist.timecreated)
