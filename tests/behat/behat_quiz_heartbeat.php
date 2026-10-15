@@ -100,9 +100,3 @@ class behat_quiz_heartbeat extends behat_question_base {
         return get_coursemodule_from_instance('quiz', $quiz->id, $quiz->course);
     }
 }
-
-/*
-
-
-
-*/

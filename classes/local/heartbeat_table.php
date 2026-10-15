@@ -93,7 +93,7 @@ class heartbeat_table extends \table_sql {
         $this->define_headers([
             '',
             get_string('timeelapsed', 'quiz_heartbeat'),
-            get_string('type', 'quiz_heartbeat')
+            get_string('type', 'quiz_heartbeat'),
         ]);
         $this->sortable(true, 'timecreated', SORT_ASC);
         $this->no_sorting('type');
@@ -170,7 +170,11 @@ class heartbeat_table extends \table_sql {
         }
     }
 
-    #[\Override]
+    /**
+     * Set up the SQL queries (count rows, and get data).
+     *
+     * @param sql_join $joins joins, wheres, params for the allowed users for the report
+     */
     public function setup_sql_queries($joins) {
         global $DB, $SESSION;
 

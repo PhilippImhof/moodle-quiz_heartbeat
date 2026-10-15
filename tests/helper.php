@@ -103,9 +103,10 @@ class quiz_heartbeat_test_helper {
      *
      * @param stdClass $quiz the quiz for which the attempts should be fetched
      * @param stdClass $course the course containing the quiz, created e.g. by create_course()
+     * @param local\heartbeat_options|null $options specific options, if overriding default
      * @return array
      */
-    public static function fetch_attempts(stdClass $quiz, stdClass $course, local\heartbeat_options $options = null): array {
+    public static function fetch_attempts(stdClass $quiz, stdClass $course, ?local\heartbeat_options $options = null): array {
         $cm = get_coursemodule_from_id('quiz', $quiz->cmid);
         $report = new local\heartbeat_report();
         [$currentgroup, $allstudentsjoins, $groupstudentsjoins, $allowedjoins] =

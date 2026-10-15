@@ -432,8 +432,6 @@ final class report_test extends \advanced_testcase {
         $options->tsort = $criteria['field'];
         $options->tdir = $criteria['order'];
 
-
-
         $fetchedattempts = quiz_heartbeat_test_helper::fetch_attempts($quiz, $course, $options);
         $sorting = array_reduce($fetchedattempts, function ($carry, $item) {
             return $carry .= $item->lastname;
