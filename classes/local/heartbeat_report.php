@@ -25,7 +25,6 @@
 
 namespace quiz_heartbeat\local;
 
-use core\dml\sql_join;
 use stdClass;
 
 /**
@@ -105,8 +104,7 @@ class heartbeat_report extends \mod_quiz\local\reports\attempts_report {
     }
 
     /**
-     * Display the form or, if the "Download" button has been pressed, invoke
-     * preparation and shipping of the ZIP archive.
+     * Display the form (just a "Refresh" button) and the table.
      *
      * @param stdClass $quiz this quiz.
      * @param stdClass $cm the course-module for this quiz.
@@ -114,21 +112,17 @@ class heartbeat_report extends \mod_quiz\local\reports\attempts_report {
      */
     public function display($quiz, $cm, $course) {
         $this->init('heartbeat', 'quiz_heartbeat\form\heartbeat_form', $quiz, $cm, $course);
-
         $this->display_form();
         $this->display_table();
     }
 
     /**
-     * Display the settings form with the download button. May display an error notification, e. g.
-     * if there are no attempts or if we already know that there are no essay questions.
+     * Display the "settings form", which we don't actually have. It's just a "Refresh" button.
+     * This might display an error notification, e. g. if there are no attempts.
      *
      * @return void
      */
     protected function display_form(): void {
-        // Printing the standard header. We'll set $hasquestions and $hasstudents to true here,
-        // because we do not need a specific notification when there are no questions or no students.
-        // The default message "Nothing to display" will be enough.
         $this->print_standard_header_and_messages(
             $this->cm,
             $this->course,
@@ -142,18 +136,28 @@ class heartbeat_report extends \mod_quiz\local\reports\attempts_report {
         $this->form->display();
     }
 
-    // FIXME
+    /**
+     * TODO: Remove the doc comment for an [\Override] as soon as 5.3 is the lowest supported version.
+     * This function prepares the data needed for the new user search widget in the quiz report action
+     * bar, as introduced with Moodle 5.3.
+     *
+     * @param stdClass $quiz
+     * @param \cm_info $cm
+     * @param stdClass $course
+     * @param \context|null $context
+     * @return array
+     */
     public function setup_report_data(stdClass $quiz, \cm_info $cm, stdClass $course, ?\context $context = null): array {
         if (!is_null($context)) {
             $this->context = $context;
         }
 
-        $options = new heartbeat_options('heartbeat', $quiz, $cm, $course);
         [$currentgroup, $allstudentsjoins, $groupstudentsjoins, $allowedjoins] = $this->get_students_joins(
             $cm,
             $course
         );
 
+        $options = new heartbeat_options('heartbeat', $quiz, $cm, $course);
         if (!is_null($this->form)) {
             if ($fromform = $this->form->get_data()) {
                 $options->process_settings_from_form($fromform);
@@ -187,7 +191,8 @@ class heartbeat_report extends \mod_quiz\local\reports\attempts_report {
             $this->cm,
             $this->course,
         );
-        $newtable = new heartbeat_table(
+
+        $table = new heartbeat_table(
             'heartbeatoverview',
             $this->quiz,
             $this->context,
@@ -196,11 +201,12 @@ class heartbeat_report extends \mod_quiz\local\reports\attempts_report {
             $groupstudentsjoins,
             $PAGE->url,
         );
-        $newtable->set_attribute('id', 'heartbeatoverview');
-        $newtable->setup();
-        $newtable->setup_sql_queries($allowedjoins);
+        $table->set_attribute('id', 'heartbeatoverview');
+        $table->setup();
+        $table->setup_sql_queries($allowedjoins);
 
+        // TODO: This can be removed once 5.3 is the lowest supported version. The legacy bar will no longer be used then.
         $uselegacyinitialsbar = !method_exists($this, 'print_action_bar');
-        $newtable->out(50, $uselegacyinitialsbar);
+        $table->out(50, $uselegacyinitialsbar);
     }
 }

@@ -46,7 +46,12 @@ class heartbeat_options extends \mod_quiz\local\reports\attempts_report_options 
     /** @var string column used for sorting */
     public string $tsort = 'lastname';
 
+    // TODO: This can be dropped as soon as Moodle 5.3 is the lowest version supported.
+    /** @var int userid used to filter for specific user */
     public $userid = -1;
+
+    // TODO: This can be dropped as soon as Moodle 5.3 is the lowest version supported.
+    /** @var string search string used to filter for one or several users */
     public $usersearch = '';
 
     /**
@@ -98,8 +103,16 @@ class heartbeat_options extends \mod_quiz\local\reports\attempts_report_options 
      */
     public function setup_from_params() {
         $this->tdir = optional_param('tdir', SORT_ASC, PARAM_INT);
+
+        // TODO: This can be cleaned up as soon as 5.3 is the lowest supported version.
+        // For the time being, we support legacy or modern filtering for initials. In modern filtering, the
+        // initials will be available in the sifirst and silast URL params. (They are also stored in the session,
+        // but that is not important here.) We try to fetch these params, setting the value to NULL if they are not
+        // available.
         $sifirst = optional_param('sifirst', null, PARAM_ALPHA);
         $silast = optional_param('silast', null, PARAM_ALPHA);
+        // If the modern filtering is active, i. e. the params are not NULL, use their values for the first and
+        // last initial. Otherwise, fetch from the legacy params tifirst and tilast, defaulting to '' if not set.
         if ($sifirst !== null || $silast !== null) {
             $this->firstinitial = $sifirst ?? '';
             $this->lastinitial = $silast ?? '';

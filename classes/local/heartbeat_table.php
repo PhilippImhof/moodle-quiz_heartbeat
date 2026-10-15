@@ -37,35 +37,50 @@ use core\dml\sql_join;
  * @license   https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class heartbeat_table extends \table_sql {
+    /** @var string name uf the field carrying the user id, needed internally by parent class */
     public $useridfield = 'userid';
 
-    /** @var \moodle_url the URL of this report. */
+    /** @var \moodle_url the URL of this report */
     protected $reporturl;
 
-    /** @var stdClass the quiz settings for the quiz we are reporting on. */
+    /** @var stdClass the quiz settings for the quiz we are reporting on */
     protected $quiz;
 
-    /** @var \context_module the quiz context. */
+    /** @var \context_module the quiz context */
     protected $context;
 
-    /** @var heartbeat_options the options affecting this report. */
+    /** @var heartbeat_options options affecting this report */
     protected $options;
 
-    /** @var \core\dml\sql_join Contains joins, wheres, params to find students
-     * in the currently selected group, if applicable.
-     */
+    /** @var sql_join contains joins, wheres, params to find students in the currently selected group */
     protected $groupstudentsjoins;
 
+    /** @var int current time stamp, used to calculate time elapsed */
     protected $currenttime;
 
-    /** @var \core\dml\sql_join Contains joins, wheres, params to find the students in the course. */
+    /** @var sql_join contains joins, wheres, params to find all students in the course */
     protected $allstudentsjoins;
 
-    // FIXME
-    public function __construct($uniqueid, $quiz, $context,
-            heartbeat_options $options, sql_join $groupstudentsjoins, sql_join $allstudentsjoins,
-            $url) {
-
+    /**
+     * Constructor for our data table.
+     *
+     * @param string $uniqueid
+     * @param stdClass $quiz
+     * @param \context_module $context
+     * @param heartbeat_options $options
+     * @param sql_join $groupstudentsjoins
+     * @param sql_join $allstudentsjoins
+     * @param \moodle_url $url
+     */
+    public function __construct(
+        string $uniqueid,
+        stdClass $quiz,
+        \context_module $context,
+        heartbeat_options $options,
+        sql_join $groupstudentsjoins,
+        sql_join $allstudentsjoins,
+        \moodle_url $url
+    ) {
         parent::__construct($uniqueid);
         $this->quiz = $quiz;
         $this->context = $context;
@@ -84,14 +99,34 @@ class heartbeat_table extends \table_sql {
         $this->no_sorting('type');
     }
 
+    /**
+     * Customised display of the name column. We just want it to be the full name, without profile picture etc.
+     *
+     * @param stdClass $row
+     * @return void
+     */
     public function col_fullname($row) {
         return fullname($row);
     }
 
+    /**
+     * Custom format for the time column: we want it to show the time elapsed, formatted in the
+     * typical Moodle style.
+     *
+     * @param stdClass $row
+     * @return void
+     */
     public function col_timecreated($row) {
         return format_time($this->currenttime - $row->timecreated);
     }
 
+    /**
+     * Custom format for the type column: we want it to show what sort of contact it was, depending on
+     * the saved step data.
+     *
+     * @param stdClass $row
+     * @return void
+     */
     public function col_type($row) {
         $type = get_string('manualsave', 'quiz_heartbeat');
         if ($row->sequencenumber === '0') {
@@ -99,28 +134,26 @@ class heartbeat_table extends \table_sql {
         } else if ($row->sequencenumber[0] === '-') {
             $type = get_string('automaticsave', 'quiz_heartbeat');
         }
-
         return $type;
     }
 
-    /*public function pagesize($perpage, $total) {
-        parent::pagesize($perpage, $total);
-        $this->pageable(false);
-    }*/
-
+    #[\Override]
     public function out($pagesize, $useinitialsbar, $downloadhelpbutton = '') {
+        // Setting the current time to be used as a reference for every row.
         $this->currenttime = time();
-        parent::out($pagesize, $useinitialsbar);
+        parent::out($pagesize, $useinitialsbar, $downloadhelpbutton);
     }
 
+    #[\Override]
     public function get_sql_where() {
         return ['', []];
     }
 
+    #[\Override]
     public function get_sql_sort() {
-        // Construct the sorting criterion. By default, we sort by the last name and first name.
-        // For the elapsed time, we need to inverse the sort order, because the actual value from
-        // the DB is the timestamp and smaller timestamps mean more time has elapsed.
+        // Construct the sorting criterion. By default, we sort by the time elapsed. When sorting that
+        // column, we must inverse the sort order, because the actual value from the DB is the timestamp
+        // and smaller timestamps mean more time has elapsed.
         if ($this->options->tsort === 'time') {
             $sortdir = ($this->options->tdir == SORT_DESC ? 'ASC' : 'DESC');
         } else {
@@ -137,13 +170,9 @@ class heartbeat_table extends \table_sql {
         }
     }
 
-    /**
-     * FIXME Set up the SQL queries (count rows, and get data).
-     *
-     * @param sql_join $joins (joins, wheres, params) defines allowed users for the report.
-     */
+    #[\Override]
     public function setup_sql_queries($joins) {
-        global $DB;
+        global $DB, $SESSION;
 
         $dbrand = self::db_random();
 
@@ -181,32 +210,29 @@ class heartbeat_table extends \table_sql {
             $params = $params + ['initiallastname' => $this->options->lastinitial . '%'];
         }
 
-        // FIXME: The initials filter is stored in $SESSION rather than passed as a parameter, to match
-        // standard Moodle behaviour (e.g. the gradebook and participants list initials bars), so
-        // the filter persists across requests (including this table being rebuilt for an AJAX
-        // user-search request) without needing to be repeated in every URL.
-        global $SESSION;
+        // For the new initials filter (5.3+), the initials are stored in $SESSION. This means we have to
+        // check the session variables and fetch the necessary information.
+        // TODO: This can be cleaned up, probably removing the part above, once 5.3 is the lowest supported version.
         $filterfirstnamekey = 'filterfirstname-' . $this->context->id;
-        $filtersurnamekey = 'filtersurname-' . $this->context->id;
         if (!empty($SESSION->heartbeatreport[$filterfirstnamekey])) {
             $nameconditions .= 'AND ' . $DB->sql_like('u.firstname', ':sinitialfirstname', false);
             $params = $params + ['sinitialfirstname' => $SESSION->heartbeatreport[$filterfirstnamekey] . '%'];
         }
+        $filtersurnamekey = 'filtersurname-' . $this->context->id;
         if (!empty($SESSION->heartbeatreport[$filtersurnamekey])) {
             $nameconditions .= 'AND ' . $DB->sql_like('u.lastname', ':sinitiallastname', false);
             $params = $params + ['sinitiallastname' => $SESSION->heartbeatreport[$filtersurnamekey] . '%'];
         }
 
-        // FIXME: filter for userid
+        // As from Moodle 5.3, the user can filter the report for a specific user or a group of users matching some
+        // search string. We build that filter here. Either, there will be a specific user id, i. e. it is not set to
+        // the default of -1 anymore. Or there will be a search string to be matched against the user profile fields.
+        // We currently only match against firstname and lastname; we could extend it to other profile fields, if needed.
         $usercondition = '';
-        // If the user filters for a given userid, take this one.
         if ($this->options->userid !== -1) {
             $usercondition = 'AND ' . $DB->sql_equal('u.id', ':userid');
             $params = $params + ['userid' => $this->options->userid];
-        }
-
-        // The user can also filter for a certain search string instead. We just search in firstname or lastname.
-        if ($this->options->usersearch !== '' && $this->options->userid === -1) {
+        } else if ($this->options->usersearch !== '') {
             $firstnamecondition = $DB->sql_like('u.firstname', ':searchstringfirst', false);
             $lastnamecondition = $DB->sql_like('u.lastname', ':searchstringlast', false);
             $usercondition = "AND ($firstnamecondition OR $lastnamecondition)";
@@ -222,6 +248,7 @@ class heartbeat_table extends \table_sql {
             $joins->wheres = '1 = 1';
         }
 
+        // Now, combine all our filters to the WHERE clause...
         $where = "
             $joins->wheres
             $nameconditions
@@ -237,8 +264,6 @@ class heartbeat_table extends \table_sql {
                 )
             GROUP BY st.userid,
                      u.id, u.firstname, u.lastname, u.firstnamephonetic, u.lastnamephonetic, u.middlename, u.alternatename";
-
-        // FIXME: sorting!
 
         $params = $params + $joins->params;
         $this->set_sql($fields, $from, $where, $params);
@@ -267,5 +292,4 @@ class heartbeat_table extends \table_sql {
                 return 'RAND()';
         }
     }
-
 }
