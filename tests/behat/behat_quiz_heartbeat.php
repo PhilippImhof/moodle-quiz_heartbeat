@@ -37,6 +37,23 @@ require_once(__DIR__ . '/../../../../../../lib/behat/behat_base.php');
  */
 class behat_quiz_heartbeat extends behat_question_base {
     /**
+     * Return the list of exact named selectors.
+     *
+     * @return array
+     */
+    public static function get_exact_named_selectors(): array {
+        return [
+            new behat_component_named_selector(
+                'Legacy initials bars',
+                [
+                    "//div[contains(concat(' ', normalize-space(@class), ' '), ' initialbar ') "
+                    . "and not(ancestor::form[contains(concat(' ', normalize-space(@class), ' '), ' initialsdropdownform ')])]",
+                ],
+            ),
+        ];
+    }
+
+    /**
      * Convert page names to URLs for steps like 'When I am on the "[identifier]" "quiz_heartbeat > [page type]" page'.
      *
      * Recognised page names are:

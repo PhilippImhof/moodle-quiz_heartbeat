@@ -427,21 +427,12 @@ final class report_test extends \advanced_testcase {
         }
 
         $cm = get_coursemodule_from_id('quiz', $quiz->cmid);
-        $report = new local\heartbeat_report();
-        [$currentgroup, $allstudentjoins, $groupstudentjoins, $allowedjoins] =
-            $report->init('heartbeat', 'quiz_heartbeat\form\heartbeat_form', $quiz, $cm, $course);
 
-        // Use reflection to force shortening of names.
-        $reflectedreport = new \ReflectionClass($report);
-        $reflectedoptions = $reflectedreport->getProperty('options');
-        $reflectedoptions->setAccessible(true);
         $options = new local\heartbeat_options('heartbeat', $quiz, $cm, $course);
         $options->tsort = $criteria['field'];
         $options->tdir = $criteria['order'];
-        $reflectedoptions->setValue($report, $options);
 
-        // Fetch the attemps using the report's API.
-        $fetchedattempts = $report->get_pending_attempts($groupstudentjoins);
+        $fetchedattempts = quiz_heartbeat_test_helper::fetch_attempts($quiz, $course, $options);
         $sorting = array_reduce($fetchedattempts, function ($carry, $item) {
             return $carry .= $item->lastname;
         }, '');
@@ -456,51 +447,51 @@ final class report_test extends \advanced_testcase {
     public static function provide_filter_conditions(): Generator {
         yield [
             'MarazzoMüller',
-            ['field' => 'tilast', 'initial' => 'M'],
+            ['field' => 'lastinitial', 'initial' => 'M'],
         ];
         yield [
             'DoeDupont',
-            ['field' => 'tilast', 'initial' => 'D'],
+            ['field' => 'lastinitial', 'initial' => 'D'],
         ];
         yield [
             'MarazzoMüller',
-            ['field' => 'tilast', 'initial' => 'm'],
+            ['field' => 'lastinitial', 'initial' => 'm'],
         ];
         yield [
             'DoeDupont',
-            ['field' => 'tilast', 'initial' => 'd'],
+            ['field' => 'lastinitial', 'initial' => 'd'],
         ];
         yield [
             '',
-            ['field' => 'tilast', 'initial' => 'x'],
+            ['field' => 'lastinitial', 'initial' => 'x'],
         ];
         yield [
             'DoeDupont',
-            ['field' => 'tifirst', 'initial' => 'J'],
+            ['field' => 'firstinitial', 'initial' => 'J'],
         ];
         yield [
             'Marazzo',
-            ['field' => 'tifirst', 'initial' => 'P'],
+            ['field' => 'firstinitial', 'initial' => 'P'],
         ];
         yield [
             'Müller',
-            ['field' => 'tifirst', 'initial' => 'G'],
+            ['field' => 'firstinitial', 'initial' => 'G'],
         ];
         yield [
             'DoeDupont',
-            ['field' => 'tifirst', 'initial' => 'j'],
+            ['field' => 'firstinitial', 'initial' => 'j'],
         ];
         yield [
             'Marazzo',
-            ['field' => 'tifirst', 'initial' => 'p'],
+            ['field' => 'firstinitial', 'initial' => 'p'],
         ];
         yield [
             'Müller',
-            ['field' => 'tifirst', 'initial' => 'g'],
+            ['field' => 'firstinitial', 'initial' => 'g'],
         ];
         yield [
             '',
-            ['field' => 'tifirst', 'initial' => 'z'],
+            ['field' => 'firstinitial', 'initial' => 'z'],
         ];
     }
 
@@ -538,23 +529,163 @@ final class report_test extends \advanced_testcase {
         }
 
         $cm = get_coursemodule_from_id('quiz', $quiz->cmid);
-        $report = new local\heartbeat_report();
-        [$currentgroup, $allstudentjoins, $groupstudentjoins, $allowedjoins] =
-            $report->init('heartbeat', 'quiz_heartbeat\form\heartbeat_form', $quiz, $cm, $course);
 
-        // Use reflection to force shortening of names.
-        $reflectedreport = new \ReflectionClass($report);
-        $reflectedoptions = $reflectedreport->getProperty('options');
-        $reflectedoptions->setAccessible(true);
         $options = new local\heartbeat_options('heartbeat', $quiz, $cm, $course);
         $options->{$criteria['field']} = $criteria['initial'];
-        $reflectedoptions->setValue($report, $options);
 
-        // Fetch the attemps using the report's API.
-        $fetchedattempts = $report->get_pending_attempts($groupstudentjoins);
-        $sorting = array_reduce($fetchedattempts, function ($carry, $item) {
+        $fetchedattempts = quiz_heartbeat_test_helper::fetch_attempts($quiz, $course, $options);
+
+        $filtering = array_reduce($fetchedattempts, function ($carry, $item) {
             return $carry .= $item->lastname;
         }, '');
-        self::assertEquals($expected, $sorting);
+        self::assertEquals($expected, $filtering);
+    }
+
+    /**
+     * Provide data to test creating options from params.
+     *
+     * @return Generator
+     */
+    public static function provide_url_params(): Generator {
+        yield [
+            'DoeDupontMarazzoMüller',
+            ['tdir' => SORT_ASC, 'tsort' => 'lastname'],
+        ];
+        yield [
+            'MüllerMarazzoDupontDoe',
+            ['tdir' => SORT_DESC, 'tsort' => 'lastname'],
+        ];
+        yield [
+            'MüllerDupontDoeMarazzo',
+            ['tdir' => SORT_ASC, 'tsort' => 'firstname'],
+        ];
+        yield [
+            'MarazzoDoeDupontMüller',
+            ['tdir' => SORT_DESC, 'tsort' => 'firstname'],
+        ];
+        yield [
+            'MarazzoDoeDupontMüller',
+            ['tdir' => SORT_ASC, 'tsort' => 'time'],
+        ];
+        yield [
+            'MüllerDupontDoeMarazzo',
+            ['tdir' => SORT_DESC, 'tsort' => 'time'],
+        ];
+        yield [
+            'MarazzoMüller',
+            ['sifirst' => '', 'silast' => 'M'],
+        ];
+        yield [
+            'DoeDupont',
+            ['sifirst' => 'J', 'silast' => ''],
+        ];
+        yield [
+            'Marazzo',
+            ['sifirst' => 'P', 'silast' => 'M'],
+        ];
+        yield [
+            'MarazzoMüller',
+            ['tifirst' => '', 'tilast' => 'M'],
+        ];
+        yield [
+            'DoeDupont',
+            ['tifirst' => 'J', 'tilast' => ''],
+        ];
+        yield [
+            'Marazzo',
+            ['tifirst' => 'P', 'tilast' => 'M'],
+        ];
+        yield [
+            'Marazzo',
+            ['search' => 'o', 'userid' => '2'],
+        ];
+        yield [
+            'Müller',
+            ['search' => '', 'userid' => '3'],
+        ];
+        yield [
+            'DoeDupontMarazzoMüller',
+            ['search' => 'o'],
+        ];
+        yield [
+            'MarazzoMüller',
+            ['search' => 'r'],
+        ];
+        yield [
+            'DupontMarazzo',
+            ['search' => 'p'],
+        ];
+    }
+
+    /**
+     * Test proper creation of options from URL params.
+     *
+     * @dataProvider provide_url_params
+     *
+     * @param string $expected expected order of names
+     * @param array $params the GET parameters
+     * @return void
+     */
+    public function test_options_from_url_params($expected, $params): void {
+        $this->resetAfterTest();
+
+        // Create a course and a quiz with two regular questions.
+        $generator = $this->getDataGenerator();
+        $questiongenerator = $this->getDataGenerator()->get_plugin_generator('core_question');
+        $course = $generator->create_course();
+        $quiz = $this->create_test_quiz($course);
+        $this->add_two_regular_questions($questiongenerator, $quiz);
+
+        // Add some students and start attempts.
+        $students = quiz_heartbeat_test_helper::add_students($course);
+        $time = time();
+        foreach ($students as $i => $student) {
+            // Make sure the four students do not start their attempt at the same time and not in the
+            // order of their names.
+            switch ($i) {
+                case 1:
+                    $delta = 10;
+                    break;
+                case 2:
+                    $delta = 30;
+                    break;
+                case 3:
+                    $delta = 0;
+                    break;
+                case 0:
+                default:
+                    $delta = 20;
+                    break;
+            }
+            $this->setUser($student);
+            // Return will be array containing $quizobj, $quba, $attemptobj.
+            $attempts[$i] = quiz_heartbeat_test_helper::start_attempt_at_quiz($quiz, $student, 1, $time + $delta);
+            $tosubmit = [
+                1 => ['answer' => 'Here we go.'],
+                2 => ['answer' => 1],
+            ];
+            $this->setUser($student);
+            $attempts[$i][2]->process_submitted_actions($time + $delta, false, $tosubmit);
+        }
+
+        $cm = get_coursemodule_from_id('quiz', $quiz->cmid);
+
+        foreach ($params as $name => $value) {
+            // For the userid, we have to fetch the id from the student object, as the test provider
+            // cannot know the generated ids.
+            if ($name === 'userid') {
+                $_GET[$name] = $students[$value]->id;
+            } else {
+                $_GET[$name] = $value;
+            }
+        }
+        $options = new local\heartbeat_options('heartbeat', $quiz, $cm, $course);
+        $options->setup_from_params();
+        $fetchedattempts = quiz_heartbeat_test_helper::fetch_attempts($quiz, $course, $options);
+
+        $filtering = array_reduce($fetchedattempts, function ($carry, $item) {
+            return $carry .= $item->lastname;
+        }, '');
+        self::assertEquals($expected, $filtering);
     }
 }
