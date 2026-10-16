@@ -66,12 +66,15 @@ class quiz_heartbeat_test_helper {
      * @param stdclass $quiz Quiz to attempt.
      * @param stdclass $user A user to attempt the quiz.
      * @param int $attemptnumber
+     * @param int $starttime
      * @return array
      */
-    public static function start_attempt_at_quiz(stdclass $quiz, stdclass $user, $attemptnumber = 1): array {
+    public static function start_attempt_at_quiz(stdclass $quiz, stdclass $user, $attemptnumber = 1, $starttime = null): array {
         advanced_testcase::setUser($user);
 
-        $starttime = time();
+        if ($starttime === null) {
+            $starttime = time();
+        }
         $quizobj = \mod_quiz\quiz_settings::create($quiz->id, $user->id);
 
         $quba = \question_engine::make_questions_usage_by_activity('mod_quiz', $quizobj->get_context());
@@ -80,7 +83,7 @@ class quiz_heartbeat_test_helper {
         // Start the attempt.
         $attempt = quiz_create_attempt($quizobj, $attemptnumber, null, $starttime, false, $user->id);
         quiz_start_new_attempt($quizobj, $quba, $attempt, $attemptnumber, $starttime);
-        quiz_attempt_save_started($quizobj, $quba, $attempt);
+        quiz_attempt_save_started($quizobj, $quba, $attempt, $starttime);
         $attemptobj = \mod_quiz\quiz_attempt::create($attempt->id);
 
         // Render each question. This is needed, because starting with Moodle 5.0, the timecreated field
